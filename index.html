@@ -6,8 +6,8 @@
     <title>正在加载...</title>
     <style>
         :root {
-            --theme-color: #d4a0b5;
-            --theme-bg: #1a1a1f;
+            --theme-color: #c9a0a0;
+            --theme-bg: #faf6f4;
         }
 
         * {
@@ -33,103 +33,101 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 24px;
+            gap: 18px;
             padding: 40px 20px;
             text-align: center;
-            max-width: 90vw;
+            max-width: 85vw;
         }
 
         /* 第一行 - LOADING 特殊符号 */
         .loading-symbol {
             color: var(--theme-color);
-            font-size: 14px;
-            letter-spacing: 3px;
-            opacity: 0.9;
+            font-size: 12px;
+            letter-spacing: 4px;
+            opacity: 0.85;
             font-family: serif;
+            white-space: nowrap;
         }
 
-        /* 第二行 - 关键词，数学花体 */
+        /* 第二行 - 关键词 */
         .keyword {
             color: var(--theme-color);
-            font-size: 42px;
+            font-size: 32px;
             font-weight: normal;
-            letter-spacing: 4px;
-            animation: keywordPulse 2s ease-in-out infinite;
+            letter-spacing: 3px;
+            font-family: 'Times New Roman', 'Georgia', serif;
+            animation: keywordPulse 2.5s ease-in-out infinite;
         }
 
         @keyframes keywordPulse {
-            0%, 100% { opacity: 0.75; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.04); }
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.03); }
         }
 
         /* 第三行 - 氛围感句子 */
         .atmosphere-text {
             color: var(--theme-color);
-            font-size: 18px;
-            letter-spacing: 2px;
-            opacity: 0.85;
-            min-height: 28px;
-            transition: opacity 0.6s ease;
-        }
-
-        /* 波浪加载条 */
-        .wave-loader {
-            width: 180px;
-            height: 3px;
-            position: relative;
-            overflow: hidden;
-            border-radius: 3px;
-            background: rgba(212, 160, 181, 0.2);
-        }
-
-        .wave-loader::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -50%;
-            width: 200%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent 0%,
-                var(--theme-color) 25%,
-                var(--theme-color) 50%,
-                var(--theme-color) 75%,
-                transparent 100%
-            );
-            animation: waveFlow 1.8s ease-in-out infinite;
-        }
-
-        @keyframes waveFlow {
-            0% { transform: translateX(-50%); }
-            100% { transform: translateX(50%); }
-        }
-
-        /* 底部文字 */
-        .bottom-text {
-            color: var(--theme-color);
             font-size: 15px;
             letter-spacing: 2px;
             opacity: 0.8;
-            min-height: 24px;
+            min-height: 22px;
+            transition: opacity 0.6s ease;
+        }
+
+        /* 加载条 - 圆点滑动 */
+        .loader-track {
+            width: 70vw;
+            max-width: 260px;
+            height: 2px;
+            background: rgba(201, 160, 160, 0.2);
+            border-radius: 2px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .loader-dot {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background: var(--theme-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px var(--theme-color), 0 0 16px var(--theme-color);
+            animation: dotSlide 2.5s ease-in-out infinite;
+        }
+
+        @keyframes dotSlide {
+            0% { left: 0%; }
+            100% { left: 100%; }
+        }
+
+        /* 底部文字 - 发光 */
+        .bottom-text {
+            color: var(--theme-color);
+            font-size: 13px;
+            letter-spacing: 2px;
+            opacity: 0.85;
+            min-height: 20px;
             transition: all 0.6s ease;
+            white-space: nowrap;
+            text-shadow: 0 0 6px var(--theme-color), 0 0 12px var(--theme-color);
         }
 
         .bottom-text.clickable {
             cursor: pointer;
             opacity: 1;
-            text-decoration: none;
             animation: glowPulse 2s ease-in-out infinite;
         }
 
         .bottom-text.clickable:hover {
-            opacity: 1;
-            text-shadow: 0 0 12px var(--theme-color);
+            text-shadow: 0 0 14px var(--theme-color), 0 0 24px var(--theme-color);
         }
 
         @keyframes glowPulse {
-            0%, 100% { text-shadow: 0 0 4px var(--theme-color); }
-            50% { text-shadow: 0 0 14px var(--theme-color); }
+            0%, 100% { text-shadow: 0 0 6px var(--theme-color), 0 0 12px var(--theme-color); }
+            50% { text-shadow: 0 0 14px var(--theme-color), 0 0 24px var(--theme-color); }
         }
     </style>
 </head>
@@ -138,37 +136,36 @@
         <!-- 第一行 - 固定 -->
         <div class="loading-symbol">˚₊‧꒰𓆩 &nbsp; L &nbsp; O &nbsp; A &nbsp; D &nbsp; I &nbsp; N &nbsp; G &nbsp; 𓆪꒱ ‧₊˚</div>
 
-        <!-- 第二行 - 关键词，数学花体 -->
-        <div class="keyword" id="keyword">𝓛𝓾𝓬𝓴𝔂</div>
+        <!-- 第二行 - 关键词 -->
+        <div class="keyword" id="keyword">Starlight</div>
 
         <!-- 第三行 - 氛围感句子 -->
-        <div class="atmosphere-text" id="atmosphereText">此生最大的幸运</div>
+        <div class="atmosphere-text" id="atmosphereText">星光指引我来见你</div>
 
-        <!-- 波浪加载条 -->
-        <div class="wave-loader"></div>
+        <!-- 加载条 - 圆点滑动 -->
+        <div class="loader-track">
+            <div class="loader-dot"></div>
+        </div>
 
-        <!-- 底部 - 固定英文 + 阶段中文 -->
+        <!-- 底部 - 固定英文 + 阶段中文，发光 -->
         <div class="bottom-text" id="bottomText">A WORLD OF OUR OWN · 感知彼此</div>
     </div>
 
     <script>
         // ==================== 数据配置 ====================
-        // 字卡词库：关键词 → 对应氛围感句子
         const wordBank = [
-            { keyword: '𝓛𝓾𝓬𝓴𝔂', text: '此生最大的幸运' },
-            { keyword: '𝓢𝓮𝓻𝓮𝓷𝓭𝓲𝓹𝓲𝓽𝔂', text: '遇见你是最美的意外' },
-            { keyword: '𝓓𝓮𝓼𝓽𝓲𝓷𝔂', text: '命中注定的相遇' },
-            { keyword: '𝓔𝓽𝓮𝓻𝓷𝓲𝓽𝔂', text: '在时间的尽头等你' },
-            { keyword: '𝓜𝓸𝓸𝓷𝓵𝓲𝓰𝓱𝓽', text: '月光洒在你我之间' },
-            { keyword: '𝓕𝓸𝓻𝓮𝓿𝓮𝓻', text: '永远有多远，就有多近' },
-            { keyword: '𝓢𝓽𝓪𝓻𝓵𝓲𝓰𝓱𝓽', text: '星光指引我来见你' },
-            { keyword: '𝓜𝓮𝓶𝓸𝓻𝔂', text: '每一帧回忆都是你' },
+            { keyword: 'Starlight', text: '星光指引我来见你' },
+            { keyword: 'Serendipity', text: '遇见你是最美的意外' },
+            { keyword: 'Destiny', text: '命中注定的相遇' },
+            { keyword: 'Eternity', text: '在时间的尽头等你' },
+            { keyword: 'Moonlight', text: '月光洒在你我之间' },
+            { keyword: 'Forever', text: '永远有多远，就有多近' },
+            { keyword: 'Lucky', text: '此生最大的幸运' },
+            { keyword: 'Memory', text: '每一帧回忆都是你' },
         ];
 
-        // 三个阶段词
         const phases = ['感知彼此', '读取记忆', '此刻相遇'];
 
-        // 加载时长范围（毫秒）
         const minLoadTime = 2500;
         const maxLoadTime = 4500;
 
@@ -177,22 +174,18 @@
         const atmosphereEl = document.getElementById('atmosphereText');
         const bottomEl = document.getElementById('bottomText');
 
-        // 随机选一个关键词
         const selected = wordBank[Math.floor(Math.random() * wordBank.length)];
         keywordEl.textContent = selected.keyword;
         atmosphereEl.textContent = selected.text;
 
-        // 总加载时间
         const totalDuration = minLoadTime + Math.random() * (maxLoadTime - minLoadTime);
         const phaseDuration = totalDuration / 3;
 
         let currentPhase = 0;
         let loadingComplete = false;
 
-        // 阶段切换
         function showPhase(index) {
             if (index >= phases.length) {
-                // 全部显示完毕，进入可点击状态
                 loadingComplete = true;
                 bottomEl.textContent = 'A WORLD OF OUR OWN · ' + phases[phases.length - 1];
                 bottomEl.classList.add('clickable');
@@ -201,33 +194,29 @@
             }
 
             bottomEl.textContent = 'A WORLD OF OUR OWN · ' + phases[index];
-            bottomEl.style.opacity = '0.6';
+            bottomEl.style.opacity = '0.7';
             
             setTimeout(() => {
-                bottomEl.style.opacity = '0.8';
+                bottomEl.style.opacity = '0.85';
             }, 100);
 
             currentPhase = index;
         }
 
-        // 初始显示第一阶段
         showPhase(0);
 
-        // 定时切换阶段
         const phaseInterval = setInterval(() => {
             currentPhase++;
             if (currentPhase < phases.length) {
                 showPhase(currentPhase);
             } else {
-                showPhase(currentPhase); // 显示完成状态
+                showPhase(currentPhase);
                 clearInterval(phaseInterval);
             }
         }, phaseDuration);
 
-        // 点击进入
         bottomEl.addEventListener('click', () => {
             if (loadingComplete) {
-                // 跳转到主页面（后续做）
                 window.location.href = 'main.html';
             }
         });
