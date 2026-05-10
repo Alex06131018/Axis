@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正在加载...</title>
+    <style>
+        :root {
+            --theme: #d4a0b5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(180deg, #fdf5f8 0%, #fae8ef 35%, #f2d4df 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+            overflow: hidden;
+            cursor: default;
+            -webkit-user-select: none;
+            user-select: none;
+            position: relative;
+        }
+
+        /* 细闪 - 极小碎钻 */
+        .sparkles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .sparkle {
+            position: absolute;
+            width: 1.5px;
+            height: 1.5px;
+            background: #fff;
+            border-radius: 50%;
+            animation: spark 2s ease-in-out infinite;
+        }
+        @keyframes spark {
+            0%, 100% { opacity: 0; transform: scale(0.3); }
+            40% { opacity: 1; transform: scale(1); }
+            60% { opacity: 0.6; transform: scale(0.6); }
+        }
+
+        /* 花瓣 */
+        .petals {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .petal {
+            position: absolute;
+            top: -35px;
+            background: radial-gradient(ellipse at 30% 30%, #f0c8d6 0%, #e2a8b8 60%, #d490a5 100%);
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0; }
+            10% { opacity: 0.65; }
+            30% { transform: translateY(30vh) rotate(120deg) translateX(50px); opacity: 0.5; }
+            60% { transform: translateY(60vh) rotate(240deg) translateX(-50px); opacity: 0.3; }
+            85% { transform: translateY(85vh) rotate(320deg) translateX(30px); opacity: 0.1; }
+            100% { transform: translateY(105vh) rotate(360deg) translateX(-15px); opacity: 0; }
+        }
+
+        /* 液态玻璃浮层 - 竖长条 */
+        .glass {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
+            border-radius: 34px;
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            box-shadow:
+                0 20px 50px rgba(180, 130, 150, 0.15),
+                inset 0 2px 10px rgba(255, 255, 255, 0.55),
+                inset 0 -2px 10px rgba(200, 150, 170, 0.1),
+                0 0 80px rgba(212, 160, 181, 0.08);
+            padding: 60px 35px 45px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            text-align: center;
+            width: 82vw;
+            max-width: 340px;
+            min-height: 480px;
+            overflow: hidden;
+        }
+        /* 顶部液态光带 */
+        .glass::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 18px;
+            right: 18px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 6px;
+            filter: blur(4px);
+        }
+        /* 底部液态光带 */
+        .glass::after {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            left: 22px;
+            right: 22px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 4px;
+            filter: blur(3px);
+        }
+
+        /* 第一行 */
+        .line1 {
+            color: var(--theme);
+            font-size: 9px;
+            letter-spacing: 4px;
+            white-space: nowrap;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        /* 关键词 - 花体间隔 */
+        .keyword {
+            color: var(--theme);
+            font-size: 36px;
+            letter-spacing: 8px;
+            font-weight: normal;
+            font-family: 'Times New Roman', 'Georgia', serif;
+            animation: pulse 2.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.75; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.04); }
+        }
+
+        /* 句子 - 缩小 */
+        .sentence {
+            color: var(--theme);
+            font-size: 12px;
+            letter-spacing: 3px;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-weight: 300;
+            opacity: 0.85;
+        }
+
+        /* 加载条区域 */
+        .loader-wrap {
+            width: 100%;
+            height: 48px;
+            position: relative;
+            margin: 6px 0;
+        }
+        /* 底线 - 有厚度 */
+        .loader-bg-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2.5px;
+            background: rgba(212, 160, 181, 0.35);
+            transform: translateY(-50%);
+            border-radius: 3px;
+        }
+        /* 光亮轨迹 */
+        .loader-glow {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 2.5px;
+            width: 0%;
+            background: #fff;
+            transform: translateY(-50%);
+            border-radius: 3px;
+            box-shadow: 0 0 8px #fff, 0 0 18px rgba(255,255,255,0.7);
+            z-index: 2;
+        }
+        .wave-svg {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 28px;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        .wave-dark {
+            stroke: rgba(212, 160, 181, 0.4);
+            fill: none;
+            stroke-width: 1;
+        }
+        .wave-light {
+            stroke: #fff;
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.6));
+        }
+        .dot {
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            width: 11px;
+            height: 11px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 14px #fff, 0 0 28px #fff, 0 0 45px rgba(255,255,255,0.5);
+            z-index: 3;
+        }
+
+        /* 底部 - 微光 */
+        .bottom {
+            color: var(--theme);
+            font-size: 12px;
+            letter-spacing: 3px;
+            white-space: nowrap;
+            margin-top: 20px;
+            text-shadow: 0 0 3px #d4a0b5, 0 0 6px #d4a0b5;
+            opacity: 0.9;
+        }
+        .bottom.done {
+            cursor: pointer;
+            animation: glow 2s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 3px #d4a0b5, 0 0 6px #d4a0b5; }
+            50% { text-shadow: 0 0 6px #d4a0b5, 0 0 12px #d4a0b5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sparkles" id="sparkles"></div>
+    <div class="petals" id="petals"></div>
+
+    <div class="glass">
+        <div class="line1">* . ꒰ 𓆩 &nbsp; L &nbsp; O &nbsp; A &nbsp; D &nbsp; I &nbsp; N &nbsp; G &nbsp; 𓆪 ꒱ . *</div>
+        <div class="keyword" id="keyword">𝓛𝓾𝓬𝓴𝔂</div>
+        <div class="sentence" id="sentence">此生最大的幸运</div>
+
+        <div class="loader-wrap" id="loaderWrap">
+            <div class="loader-bg-line"></div>
+            <svg class="wave-svg" viewBox="0 0 300 28" preserveAspectRatio="none">
+                <path class="wave-dark" d="M0,14 Q15,5 30,14 Q45,23 60,14 Q75,5 90,14 Q105,23 120,14 Q135,5 150,14 Q165,23 180,14 Q195,5 210,14 Q225,23 240,14 Q255,5 270,14 Q285,23 300,14"/>
+                <path class="wave-light" id="waveLight" d="M0,14 Q15,5 30,14 Q45,23 60,14 Q75,5 90,14 Q105,23 120,14 Q135,5 150,14 Q165,23 180,14 Q195,5 210,14 Q225,23 240,14 Q255,5 270,14 Q285,23 300,14"/>
+            </svg>
+            <div class="loader-glow" id="loaderGlow"></div>
+            <div class="dot" id="dot"></div>
+        </div>
+
+        <div class="bottom" id="bottom">A WORLD OF OUR OWN · 感知彼此</div>
+    </div>
+
+    <script>
+        (function() {
+            // 极细碎钻细闪
+            var sBox = document.getElementById('sparkles');
+            for (var i = 0; i < 90; i++) {
+                var sp = document.createElement('div');
+                sp.className = 'sparkle';
+                sp.style.left = Math.random() * 98 + '%';
+                sp.style.top = Math.random() * 98 + '%';
+                sp.style.animationDelay = Math.random() * 3 + 's';
+                sp.style.animationDuration = (1.2 + Math.random() * 2.5) + 's';
+                sBox.appendChild(sp);
+            }
+
+            // 花瓣
+            var pBox = document.getElementById('petals');
+            for (var i = 0; i < 35; i++) {
+                var p = document.createElement('div');
+                p.className = 'petal';
+                var s = 7 + Math.random() * 13;
+                p.style.width = s + 'px';
+                p.style.height = s * 0.65 + 'px';
+                p.style.left = Math.random() * 96 + '%';
+                p.style.animationDuration = (7 + Math.random() * 10) + 's';
+                p.style.animationDelay = Math.random() * 8 + 's';
+                p.style.opacity = 0.3 + Math.random() * 0.4;
+                p.style.borderRadius = (45 + Math.random() * 20) + '% ' + (2 + Math.random() * 12) + '% ' + (35 + Math.random() * 25) + '% ' + (2 + Math.random() * 12) + '%';
+                pBox.appendChild(p);
+            }
+
+            // 词库
+            var words = [
+                { k: '𝓛𝓾𝓬𝓴𝔂', t: '此生最大的幸运' },
+                { k: '𝓢𝓽𝓪𝓻𝓵𝓲𝓰𝓱𝓽', t: '星光指引我来见你' },
+                { k: '𝓢𝓮𝓻𝓮𝓷𝓭𝓲𝓹𝓲𝓽𝔂', t: '遇见你是最美的意外' },
+                { k: '𝓓𝓮𝓼𝓽𝓲𝓷𝔂', t: '命中注定的相遇' },
+                { k: '𝓔𝓽𝓮𝓻𝓷𝓲𝓽𝔂', t: '在时间的尽头等你' },
+                { k: '𝓜𝓸𝓸𝓷𝓵𝓲𝓰𝓱𝓽', t: '月光洒在你我之间' },
+                { k: '𝓕𝓸𝓻𝓮𝓿𝓮𝓻', t: '永远有多远，就有多近' },
+                { k: '𝓜𝓮𝓶𝓸𝓻𝔂', t: '每一帧回忆都是你' }
+            ];
+            var phases = ['感知彼此', '读取记忆', '此刻相遇'];
+
+            var pick = words[Math.floor(Math.random() * words.length)];
+            document.getElementById('keyword').textContent = pick.k;
+            document.getElementById('sentence').textContent = pick.t;
+
+            // 底部三阶段
+            var bottom = document.getElementById('bottom');
+            var time = 3000 + Math.random() * 2000;
+            var step = time / 3;
+            var idx = 0;
+            var done = false;
+
+            function showPhase(i) {
+                if (i >= phases.length) {
+                    done = true;
+                    bottom.textContent = 'A WORLD OF OUR OWN · ' + phases[phases.length - 1];
+                    bottom.classList.add('done');
+                    return;
+                }
+                bottom.textContent = 'A WORLD OF OUR OWN · ' + phases[i];
+                idx = i;
+            }
+            showPhase(0);
+            var phaseTimer = setInterval(function() {
+                idx++;
+                if (idx < phases.length) {
+                    showPhase(idx);
+                } else if (idx === phases.length) {
+                    showPhase(idx);
+                    clearInterval(phaseTimer);
+                }
+            }, step);
+
+            bottom.addEventListener('click', function() {
+                if (done) window.location.href = 'main.html';
+            });
+
+            // 加载条动画 - 亮光和波浪结束消失
+            var dot = document.getElementById('dot');
+            var glow = document.getElementById('loaderGlow');
+            var waveLight = document.getElementById('waveLight');
+            var wrap = document.getElementById('loaderWrap');
+            var totalLen = 300;
+            waveLight.style.strokeDasharray = totalLen;
+            waveLight.style.strokeDashoffset = totalLen;
+
+            var startTime = Date.now();
+            var duration = time;
+            var finished = false;
+
+            function anim() {
+                var elapsed = Date.now() - startTime;
+                var pct = Math.min(elapsed / duration, 1);
+                var wrapW = wrap.clientWidth;
+                dot.style.left = (pct * wrapW) + 'px';
+                glow.style.width = (pct * 100) + '%';
+                var offset = totalLen - (pct * totalLen);
+                waveLight.style.strokeDashoffset = offset;
+
+                if (pct >= 1 && !finished) {
+                    finished = true;
+                    // 光球走到头，亮光和波浪逐渐消失
+                    setTimeout(function() {
+                        glow.style.transition = 'opacity 1s ease-out, box-shadow 1s ease-out';
+                        waveLight.style.transition = 'opacity 1s ease-out';
+                        glow.style.opacity = '0';
+                        glow.style.boxShadow = 'none';
+                        waveLight.style.opacity = '0';
+                        dot.style.opacity = '0.35';
+                    }, 200);
+                }
+
+                if (!finished) {
+                    requestAnimationFrame(anim);
+                }
+            }
+            requestAnimationFrame(anim);
+        })();
+    </script>
+</body>
+</html>
