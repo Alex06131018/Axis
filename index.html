@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正在加载...</title>
+    <style>
+        :root {
+            --theme: #d4a0b5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(180deg, #fef5f8 0%, #fce8f0 35%, #f2d4df 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Times New Roman', 'Georgia', 'Noto Serif SC', 'STSong', 'Songti SC', serif;
+            overflow: hidden;
+            cursor: default;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* 花瓣 */
+        .petals {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .petal {
+            position: absolute;
+            top: -35px;
+            border-radius: 50% 0 50% 0;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            30% { transform: translateY(30vh) rotate(120deg) translateX(45px); opacity: 0.5; }
+            60% { transform: translateY(60vh) rotate(240deg) translateX(-45px); opacity: 0.3; }
+            85% { transform: translateY(85vh) rotate(320deg) translateX(25px); opacity: 0.1; }
+            100% { transform: translateY(105vh) rotate(360deg) translateX(-15px); opacity: 0; }
+        }
+
+        /* 液态玻璃卡片 */
+        .glass {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.28);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 32px;
+            border: 1.5px solid rgba(255, 255, 255, 0.55);
+            box-shadow: 
+                0 12px 40px rgba(180, 130, 150, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.65),
+                0 0 60px rgba(212, 160, 181, 0.1);
+            padding: 42px 35px 38px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            text-align: center;
+            width: 88vw;
+            max-width: 360px;
+            min-height: 420px;
+        }
+
+        /* 第一行 */
+        .line1 {
+            color: var(--theme);
+            font-size: 11px;
+            letter-spacing: 4px;
+            white-space: nowrap;
+            opacity: 0.8;
+        }
+
+        /* 关键词 */
+        .keyword {
+            color: var(--theme);
+            font-size: 40px;
+            letter-spacing: 5px;
+            font-weight: normal;
+            animation: pulse 2.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.75; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.04); }
+        }
+
+        /* 句子 */
+        .sentence {
+            color: var(--theme);
+            font-size: 17px;
+            letter-spacing: 3px;
+            font-family: 'STSong', 'Songti SC', 'SimSun', '宋体', serif;
+        }
+
+        /* 加载条 */
+        .loader-wrap {
+            width: 100%;
+            height: 34px;
+            position: relative;
+            margin: 4px 0;
+        }
+        .loader-bg {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: rgba(180, 140, 150, 0.25);
+            transform: translateY(-50%);
+            border-radius: 1px;
+        }
+        .loader-progress {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 1px;
+            width: 0%;
+            background: #fff;
+            transform: translateY(-50%);
+            border-radius: 1px;
+            box-shadow: 0 0 6px #fff, 0 0 14px rgba(255,255,255,0.7);
+            z-index: 2;
+        }
+        .wave-svg {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 22px;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        .wave-dark {
+            stroke: rgba(180, 140, 150, 0.35);
+            fill: none;
+            stroke-width: 1;
+        }
+        .wave-light {
+            stroke: #fff;
+            fill: none;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 4px rgba(255,255,255,0.6));
+        }
+        .dot {
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            width: 11px;
+            height: 11px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 12px #fff, 0 0 24px #fff, 0 0 40px rgba(255,255,255,0.5);
+            z-index: 3;
+        }
+
+        /* 底部 */
+        .bottom {
+            color: var(--theme);
+            font-size: 13px;
+            letter-spacing: 3px;
+            white-space: nowrap;
+            margin-top: 22px;
+            text-shadow: 0 0 4px #d4a0b5, 0 0 8px #d4a0b5;
+            opacity: 0.9;
+        }
+        .bottom.done {
+            cursor: pointer;
+            animation: glow 2s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 4px #d4a0b5, 0 0 8px #d4a0b5; }
+            50% { text-shadow: 0 0 8px #d4a0b5, 0 0 16px #d4a0b5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="petals" id="petals"></div>
+
+    <div class="glass">
+        <div class="line1">* . ꒰ 𓆩 &nbsp; L &nbsp; O &nbsp; A &nbsp; D &nbsp; I &nbsp; N &nbsp; G &nbsp; 𓆪 ꒱ . *</div>
+        <div class="keyword" id="keyword">𝓛𝓾𝓬𝓴𝔂</div>
+        <div class="sentence" id="sentence">此生最大的幸运</div>
+
+        <div class="loader-wrap" id="loaderWrap">
+            <div class="loader-bg"></div>
+            <svg class="wave-svg" viewBox="0 0 300 22" preserveAspectRatio="none">
+                <path class="wave-dark" d="M0,11 Q15,3 30,11 Q45,19 60,11 Q75,3 90,11 Q105,19 120,11 Q135,3 150,11 Q165,19 180,11 Q195,3 210,11 Q225,19 240,11 Q255,3 270,11 Q285,19 300,11"/>
+                <path class="wave-light" id="waveLight" d="M0,11 Q15,3 30,11 Q45,19 60,11 Q75,3 90,11 Q105,19 120,11 Q135,3 150,11 Q165,19 180,11 Q195,3 210,11 Q225,19 240,11 Q255,3 270,11 Q285,19 300,11"/>
+            </svg>
+            <div class="loader-progress" id="loaderProgress"></div>
+            <div class="dot" id="dot"></div>
+        </div>
+
+        <div class="bottom" id="bottom">A WORLD OF OUR OWN · 感知彼此</div>
+    </div>
+
+    <script>
+        (function() {
+            // 真实花瓣
+            var petalsBox = document.getElementById('petals');
+            var colors = ['#e8b4c4', '#ecc0cf', '#f0c8d6', '#e2a8b8', '#dda0b5', '#f2d0da'];
+            for (var i = 0; i < 35; i++) {
+                var p = document.createElement('div');
+                p.className = 'petal';
+                var s = 6 + Math.random() * 14;
+                p.style.width = s + 'px';
+                p.style.height = s * 0.7 + 'px';
+                p.style.left = Math.random() * 96 + '%';
+                p.style.animationDuration = (7 + Math.random() * 10) + 's';
+                p.style.animationDelay = Math.random() * 8 + 's';
+                p.style.opacity = 0.3 + Math.random() * 0.4;
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.borderRadius = (40 + Math.random() * 25) + '% ' + (3 + Math.random() * 15) + '% ' + (30 + Math.random() * 30) + '% ' + (3 + Math.random() * 15) + '%';
+                petalsBox.appendChild(p);
+            }
+
+            // 词库
+            var words = [
+                { k: '𝓛𝓾𝓬𝓴𝔂', t: '此生最大的幸运' },
+                { k: '𝓢𝓽𝓪𝓻𝓵𝓲𝓰𝓱𝓽', t: '星光指引我来见你' },
+                { k: '𝓢𝓮𝓻𝓮𝓷𝓭𝓲𝓹𝓲𝓽𝔂', t: '遇见你是最美的意外' },
+                { k: '𝓓𝓮𝓼𝓽𝓲𝓷𝔂', t: '命中注定的相遇' },
+                { k: '𝓔𝓽𝓮𝓻𝓷𝓲𝓽𝔂', t: '在时间的尽头等你' },
+                { k: '𝓜𝓸𝓸𝓷𝓵𝓲𝓰𝓱𝓽', t: '月光洒在你我之间' },
+                { k: '𝓕𝓸𝓻𝓮𝓿𝓮𝓻', t: '永远有多远，就有多近' },
+                { k: '𝓜𝓮𝓶𝓸𝓻𝔂', t: '每一帧回忆都是你' }
+            ];
+            var phases = ['感知彼此', '读取记忆', '此刻相遇'];
+
+            var pick = words[Math.floor(Math.random() * words.length)];
+            document.getElementById('keyword').textContent = pick.k;
+            document.getElementById('sentence').textContent = pick.t;
+
+            var bottom = document.getElementById('bottom');
+            var time = 3000 + Math.random() * 2000;
+            var step = time / 3;
+            var idx = 0;
+            var done = false;
+
+            function showPhase(i) {
+                if (i >= phases.length) {
+                    done = true;
+                    bottom.textContent = 'A WORLD OF OUR OWN · ' + phases[phases.length - 1];
+                    bottom.classList.add('done');
+                    return;
+                }
+                bottom.textContent = 'A WORLD OF OUR OWN · ' + phases[i];
+                idx = i;
+            }
+            showPhase(0);
+            var phaseTimer = setInterval(function() {
+                idx++;
+                if (idx < phases.length) {
+                    showPhase(idx);
+                } else if (idx === phases.length) {
+                    showPhase(idx);
+                    clearInterval(phaseTimer);
+                }
+            }, step);
+
+            bottom.addEventListener('click', function() {
+                if (done) window.location.href = 'main.html';
+            });
+
+            // 加载条联动动画
+            var dot = document.getElementById('dot');
+            var progress = document.getElementById('loaderProgress');
+            var waveLight = document.getElementById('waveLight');
+            var wrap = document.getElementById('loaderWrap');
+            var totalLen = 300;
+            waveLight.style.strokeDasharray = totalLen;
+            waveLight.style.strokeDashoffset = totalLen;
+
+            var startTime = Date.now();
+            var duration = time;
+
+            function anim() {
+                var elapsed = Date.now() - startTime;
+                var pct = Math.min(elapsed / duration, 1);
+                var wrapW = wrap.clientWidth;
+                dot.style.left = (pct * wrapW) + 'px';
+                progress.style.width = (pct * 100) + '%';
+                var offset = totalLen - (pct * totalLen);
+                waveLight.style.strokeDashoffset = offset;
+
+                if (pct < 1) {
+                    requestAnimationFrame(anim);
+                }
+            }
+            requestAnimationFrame(anim);
+        })();
+    </script>
+</body>
+</html>
