@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>正在加载...</title>
+    <title>Loading...</title>
     <style>
         :root {
             --theme-color: #d4a0b5;
             --theme-bg-start: #fdf6f8;
             --theme-bg-end: #fce8ef;
-            --dot-glow: #ffffff;
         }
 
         * {
@@ -19,8 +18,8 @@
         }
 
         body {
-            background: linear-gradient(180deg, var(--theme-bg-start) 0%, var(--theme-bg-end) 100%);
-            display: flex;
+            background: linear-gradient(180deg, var(--theme-bg-start) 0%, var(--theme-bg-end) 100%);背景: linear-gradient(180deg, var(--theme-bg-start) 0%, var(--theme-bg-end) 100%);
+            display: flex;显示: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -32,7 +31,6 @@
             position: relative;
         }
 
-        /* 花瓣容器 */
         .petals-container {
             position: fixed;
             top: 0;
@@ -75,6 +73,250 @@
             100% {
                 transform: translateY(105vh) rotate(360deg) translateX(-5px);
                 opacity: 0;
+            }
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 40px 20px;
+            text-align: center;
+            max-width: 85vw;
+            position: relative;
+            z-index: 1;
+        }
+
+        .loading-symbol {
+            color: var(--theme-color);颜色: var(--主题颜色);
+            font-size: 10px;
+            letter-spacing: 3px;字间距: 3像素;
+            opacity: 0.8;
+            font-family: 'Times New Roman', 'Georgia', 'Noto Serif SC', serif;字体族: 'Times New Roman', 'Georgia', 'Noto Serif SC', 衬线;
+            white-space: nowrap;
+            margin-top: -30px;
+        }
+
+        .keyword {
+            color: var(--theme-color);颜色: var(--主题颜色);
+            font-size: 30px;
+            font-weight: normal;
+            letter-spacing: 4px;
+            font-family: 'Times New Roman', 'Georgia', 'Noto Serif SC', serif;字体族: 'Times New Roman', 'Georgia', 'Noto Serif SC', 衬线;
+            animation: keywordPulse 2.5s ease-in-out infinite;
+        }
+
+        @keyframes keywordPulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.03); }
+        }
+
+        .atmosphere-text {
+            color: var(--theme-color);颜色: var(--主题颜色);
+            font-size: 15px;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            min-height: 22px;
+            transition: opacity 0.6s ease;
+        }
+
+        .loader-track {
+            width: 75vw;
+            max-width: 280px;
+            height: 3px;
+            background: rgba(212, 160, 181, 0.2);
+            border-radius: 3px;
+            position: relative;
+            overflow: visible;
+            margin: 6px 0;
+        }
+
+        .loader-track::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0.9) 0%, 
+                rgba(255,255,255,0.7) 50%, 
+                rgba(255,255,255,0.4) 100%);
+            border-radius: 3px;
+            box-shadow: 0 0 8px rgba(255,255,255,0.9), 0 0 16px rgba(255,255,255,0.5);
+            animation: trackGlow 2.5s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        .loader-track::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 0;
+            height: 15px;
+            width: 0%;
+            background: radial-gradient(ellipse at center, 
+                rgba(255,255,255,0.4) 0%, 
+                transparent 70%);
+            animation: waveGlow 2.5s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes trackGlow {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes waveGlow {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .loader-dot {
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            width: 12px;
+            height: 12px;
+            background: #ffffff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 
+                0 0 10px #ffffff, 
+                0 0 20px #ffffff, 
+                0 0 35px rgba(255,255,255,0.8),
+                0 0 50px rgba(255,255,255,0.5);
+            animation: dotSlide 2.5s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes dotSlide {
+            0% { left: 0%; }
+            100% { left: 100%; }
+        }
+
+        .bottom-text {
+            color: var(--theme-color);
+            font-size: 12px;
+            letter-spacing: 2px;
+            opacity: 0.85;
+            min-height: 18px;
+            transition: all 0.6s ease;
+            white-space: nowrap;
+            text-shadow: 0 0 6px var(--theme-color), 0 0 12px var(--theme-color);
+            margin-top: 20px;
+        }
+
+        .bottom-text.clickable {
+            cursor: pointer;
+            opacity: 1;
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { text-shadow: 0 0 6px var(--theme-color), 0 0 14px var(--theme-color); }
+            50% { text-shadow: 0 0 12px var(--theme-color), 0 0 24px var(--theme-color); }
+        }
+    </style>
+</head>
+<body>
+    <div class="petals-container" id="petalsContainer"></div>
+
+    <div class="loading-container">
+        <div class="loading-symbol">*+.꒰𓆩 &nbsp; L &nbsp; O &nbsp; A &nbsp; D &nbsp; I &nbsp; N &nbsp; G &nbsp; 𓆪꒱ .+*</div>
+
+        <div class="keyword" id="keyword">Starlight</div>
+
+        <div class="atmosphere-text" id="atmosphereText">星光指引我来见你</div>
+
+        <div class="loader-track">
+            <div class="loader-dot"></div>
+        </div>
+
+        <div class="bottom-text" id="bottomText">A WORLD OF OUR OWN . 感知彼此</div>
+    </div>
+
+    <script>
+        (function() {
+            var container = document.getElementById('petalsContainer');
+            var petalCount = 20;
+            
+            for (var i = 0; i < petalCount; i++) {
+                var petal = document.createElement('div');
+                petal.classList.add('petal');
+                petal.style.left = Math.random() * 100 + '%';
+                petal.style.animationDuration = (4 + Math.random() * 6) + 's';
+                petal.style.animationDelay = Math.random() * 5 + 's';
+                petal.style.width = (8 + Math.random() * 10) + 'px';
+                petal.style.height = petal.style.width;
+                petal.style.opacity = (0.3 + Math.random() * 0.4);
+                container.appendChild(petal);
+            }
+
+            var wordBank = [
+                { keyword: 'Starlight', text: '星光指引我来见你' },
+                { keyword: 'Serendipity', text: '遇见你是最美的意外' },
+                { keyword: 'Destiny', text: '命中注定的相遇' },
+                { keyword: 'Eternity', text: '在时间的尽头等你' },
+                { keyword: 'Moonlight', text: '月光洒在你我之间' },
+                { keyword: 'Forever', text: '永远有多远，就有多近' },
+                { keyword: 'Lucky', text: '此生最大的幸运' },
+                { keyword: 'Memory', text: '每一帧回忆都是你' }
+            ];
+
+            var phases = ['感知彼此', '读取记忆', '此刻相遇'];
+
+            var keywordEl = document.getElementById('keyword');
+            var atmosphereEl = document.getElementById('atmosphereText');
+            var bottomEl = document.getElementById('bottomText');
+
+            var selected = wordBank[Math.floor(Math.random() * wordBank.length)];
+            keywordEl.textContent = selected.keyword;
+            atmosphereEl.textContent = selected.text;
+
+            var totalDuration = 2500 + Math.random() * 2000;
+            var phaseDuration = totalDuration / 3;
+            var currentPhase = 0;
+            var loadingComplete = false;
+
+            function showPhase(index) {
+                if (index >= phases.length) {
+                    loadingComplete = true;
+                    bottomEl.textContent = 'A WORLD OF OUR OWN . ' + phases[phases.length - 1];bottomEl.textContent = '我们自己的世界 . ' + phases[phases.length - 1];bottomEl.textContent = '我们自己的世界 . ' + phases[phases.length - 1];bottomEl.textContent = '我们自己的世界 . ' + phases[phases.length - 1];
+                    bottomEl.classList.add('clickable');
+                    bottomEl.style.cursor = 'pointer';
+                    return;
+                }
+                bottomEl.textContent = 'A WORLD OF OUR OWN . ' + phases[index];bottomEl.textContent = '我们自己的世界 . ' + phases[index];bottomEl.textContent = '我们自己的世界 . ' + phases[index];bottomEl.textContent = '我们自己的世界 . ' + phases[index];
+                bottomEl.style.opacity = '0.7';
+                setTimeout(function() {
+                    bottomEl.style.opacity = '0.85';
+                }, 100);
+                currentPhase = index;
+            }
+
+            showPhase(0);
+
+            setInterval(function() {
+                currentPhase++;
+                if (currentPhase < phases.length) {
+                    showPhase(currentPhase);
+                } else {
+                    showPhase(currentPhase);
+                }
+            }, phaseDuration);
+
+            bottomEl.addEventListener('click', function() {
+                if (loadingComplete) {如果 (loadingComplete) {如果 (loadingComplete) {如果 (loadingComplete) {如果 (loadingComplete) {如果 (loadingComplete) {如果 (loadingComplete) {如果 (loadingComplete) {
+                    window.location.href = 'main.html';
+                }
+            });
+        })();
+    </script>
+</body>
+</html>                transform转换: translateY translateY translateY(105vh) rotate(360deg) translateX(-5px);</html>转换：translateY translateY translateY(105vh) rotate(360deg) translateX(-5px);</html>转换：translateY translateY translateY(105vh) rotate(360deg) translateX(-5px);</html>转换: translateY translateY translateY(105vh) rotate(360deg) translateX(-5px);
+                opacity: 0;透明度：0；
             }
         }
 
