@@ -146,8 +146,7 @@
             }
             showPhase(0);
             setInterval(function() { idx++; if (idx < phases.length) showPhase(idx); }, step);
-            bottom.addEventListener('click', function() { if (done) window.location.href = 'main.html'; });
-        })();
+            var checkDone = setInterval(function() { if (done) { clearInterval(checkDone); window.location.href = 'main.html'; } }, 300);
     </script>
 </body>
 </html>
