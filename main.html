@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日</title>
+    <style>
+        :root { --theme: #d4a0b5; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: transparent;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; overflow: hidden;
+            font-family: 'PingFang SC','Microsoft YaHei','Hiragino Sans GB',sans-serif;
+            cursor: default; -webkit-user-select: none; user-select: none; position: relative;
+        }
+
+        /* 底层阴影玻璃 */
+        .card-shadow {
+            position: relative; z-index: 1;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.25);
+            box-shadow: 0 30px 70px rgba(180,130,150,0.15), 0 0 100px rgba(212,160,181,0.1);
+            padding: 70px 40px 55px;
+            display: flex; flex-direction: column; align-items: center;
+            gap: 26px; text-align: center;
+            width: 84vw; max-width: 360px;
+        }
+        /* 上层极透玻璃 */
+        .card-top {
+            position: absolute; z-index: 2; top: 10px; left: 10px; right: 10px; bottom: 10px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 33px;
+            border: 0.5px solid rgba(255,255,255,0.4);
+            pointer-events: none;
+        }
+
+        .title-lucky { color: rgba(212,160,181,0.75); font-size: 36px; letter-spacing: 7px; font-weight: bold; font-family: 'Times New Roman','Georgia',serif; text-shadow: 0 0 12px rgba(212,160,181,0.3); }
+        .date-text { color: rgba(212,160,181,0.65); font-size: 12px; letter-spacing: 3px; }
+        .name-tag { color: rgba(212,160,181,0.7); font-size: 26px; font-weight: bold; letter-spacing: 4px; text-shadow: 0 0 10px rgba(212,160,181,0.25); }
+        .status-tag { 
+            display: inline-block; background: rgba(212,160,181,0.1); color: rgba(212,160,181,0.7);
+            padding: 8px 20px; border-radius: 22px; font-size: 13px; letter-spacing: 2px;
+            border: 0.4px solid rgba(212,160,181,0.25);
+        }
+        .weather-tag {
+            display: inline-block; background: rgba(212,160,181,0.06); color: rgba(212,160,181,0.6);
+            padding: 6px 16px; border-radius: 18px; font-size: 11px; letter-spacing: 2px;
+        }
+        .message-line { color: rgba(212,160,181,0.7); font-size: 15px; letter-spacing: 2px; font-style: italic; margin-top: 10px; text-shadow: 0 0 8px rgba(212,160,181,0.2); }
+        .btn-welcome {
+            background: rgba(212,160,181,0.12); color: rgba(212,160,181,0.7); border: 0.5px solid rgba(212,160,181,0.3);
+            padding: 14px 44px; border-radius: 30px; font-size: 15px; letter-spacing: 4px;
+            cursor: pointer; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease; margin-top: 12px;
+        }
+        .btn-welcome:hover { background: rgba(212,160,181,0.25); box-shadow: 0 0 24px rgba(212,160,181,0.2); }
+    </style>
+</head>
+<body>
+    <div class="card-shadow" id="cardShadow">
+        <div class="card-top"></div>
+        <div class="title-lucky">LUCKY DAY</div>
+        <div class="date-text" id="dateText">2026年5月11日</div>
+        <div class="name-tag" id="nameTag">夏以昼</div>
+        <div class="status-tag" id="statusTag">兴奋</div>
+        <div class="weather-tag" id="weatherTag">绿意盎然</div>
+        <div class="message-line" id="messageLine">“好好吃饭了吗？”</div>
+        <button class="btn-welcome" onclick="goChat()">欢迎相遇</button>
+    </div>
+
+    <script>
+        (function() {
+            var now = new Date();
+            document.getElementById('dateText').textContent = now.getFullYear() + '年' + (now.getMonth()+1) + '月' + now.getDate() + '日';
+
+            var statuses = ['兴奋', '困困', '安心', '生气', '无法决定', '想你'];
+            var weathers = ['绿意盎然', '清风徐徐', '阳光正好', '细雨绵绵', '彩虹出现了'];
+            var messages = ['好好吃饭了吗？', '我会看着你的', '你是最喜欢的人', '别太累了', '今天也很想你'];
+
+            document.getElementById('statusTag').textContent = statuses[Math.floor(Math.random() * statuses.length)];
+            document.getElementById('weatherTag').textContent = weathers[Math.floor(Math.random() * weathers.length)];
+            document.getElementById('messageLine').textContent = '“' + messages[Math.floor(Math.random() * messages.length)] + '”';
+
+            window.goChat = function() {
+                window.location.href = 'chat.html';
+            };
+        })();
+    </script>
+</body>
+</html>
