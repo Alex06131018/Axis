@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LUCKY DAY</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            padding: 20px;
+        }
+        .today-page {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            aspect-ratio: 3 / 4.5;
+            background: #ffffff;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+        }
+        /* 背景装饰符号（星星月亮爱心） */
+        .bg-deco {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-deco svg {
+            position: absolute;
+            fill: #d4a0b5;
+            opacity: 0.3;
+            transition: fill 0.8s ease;
+        }
+        /* 日期卡片（翅膀花边） */
+        .date-card {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            z-index: 1;
+            width: 100px;
+            height: 70px;
+            background: #fcf5f8;
+            border-radius: 16px;
+            border: 1.5px solid #d4a0b5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #d4a0b5;
+            transition: all 0.8s ease;
+            box-shadow: 0 2px 12px rgba(212,160,181,0.06);
+        }
+        .date-card .year { font-size: 12px; font-weight: 300; letter-spacing: 1px; }
+        .date-card .day { font-size: 14px; font-weight: 500; margin-top: 2px; }
+        /* 翅膀装饰（用伪元素模拟） */
+        .date-card::before, .date-card::after {
+            content: '✧';
+            position: absolute;
+            top: -8px;
+            font-size: 16px;
+            color: #d4a0b5;
+            transition: color 0.8s ease;
+        }
+        .date-card::before { left: -6px; transform: rotate(-20deg); }
+        .date-card::after { right: -6px; transform: rotate(20deg); }
+
+        /* 拍立得 */
+        .polaroid {
+            position: absolute;
+            top: 90px;
+            left: 10px;
+            z-index: 2;
+            width: 160px;
+            transform: rotate(5deg);
+            background: #fcf5f8;
+            border: 6px solid #fcf5f8;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(212,160,181,0.12);
+            transition: all 0.8s ease;
+        }
+        .polaroid .photo {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: #eee;
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+        .polaroid .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .polaroid .text-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            font-weight: bold;
+            width: 90%;
+        }
+        .polaroid .text-overlay .love { font-size: 10px; letter-spacing: 1px; }
+        .polaroid .text-overlay .days { font-size: 36px; line-height: 1; margin: 2px 0; }
+        .polaroid .text-overlay .start { font-size: 8px; opacity: 0.9; }
+
+        /* 黑胶唱片 */
+        .record {
+            position: absolute;
+            top: 160px;
+            left: -20px;
+            z-index: 1;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #333, #111);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            transition: background 0.8s ease;
+        }
+        .record::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #888, #444);
+            border: 2px solid #222;
+        }
+
+        /* 状态框（右上） */
+        .status-box {
+            position: absolute;
+            top: 30px;
+            right: 16px;
+            z-index: 1;
+            width: 120px;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 16px;
+            padding: 12px 14px;
+            border: 1px solid rgba(212,160,181,0.2);
+            transition: all 0.8s ease;
+            box-shadow: 0 2px 12px rgba(212,160,181,0.04);
+        }
+        .status-box .row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #d4a0b5;
+            transition: color 0.8s ease;
+        }
+        .status-box .row .emoji { font-size: 20px; }
+        .status-box .row .status { font-size: 14px; font-weight: 500; }
+        .status-box .message {
+            margin-top: 4px;
+            font-size: 10px;
+            color: #d4a0b5;
+            transition: color 0.8s ease;
+            line-height: 1.3;
+            opacity: 0.8;
+        }
+
+        /* 小状态框（右下） */
+        .small-box {
+            position: absolute;
+            bottom: 90px;
+            right: 16px;
+            z-index: 1;
+            width: 100px;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 14px;
+            padding: 10px 12px;
+            border: 1px solid rgba(212,160,181,0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #d4a0b5;
+            transition: all 0.8s ease;
+            box-shadow: 0 2px 12px rgba(212,160,181,0.04);
+        }
+        .small-box .icon { font-size: 16px; }
+        .small-box .text { font-size: 11px; font-weight: 300; }
+
+        /* 按钮 */
+        .btn {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+            width: 80%;
+            padding: 12px;
+            border-radius: 30px;
+            border: none;
+            background: #d4a0b5;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(212,160,181,0.2);
+        }
+        .btn:active { transform: translateX(-50%) scale(0.96); opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="today-page" id="todayPage">
+        <!-- 背景装饰 -->
+        <div class="bg-deco" id="bgDeco">
+            <!-- 星星、月亮、爱心等，用 SVG 或 Unicode 模拟 -->
+            <svg viewBox="0 0 400 600" width="100%" height="100%">
+                <path d="M100,400 Q110,390 120,400 Q110,410 100,400" fill="#d4a0b5" opacity="0.2"/>
+                <circle cx="300" cy="480" r="4" fill="#d4a0b5" opacity="0.2"/>
+                <circle cx="280" cy="460" r="2" fill="#d4a0b5" opacity="0.2"/>
+                <circle cx="320" cy="470" r="3" fill="#d4a0b5" opacity="0.2"/>
+                <path d="M150,450 Q160,440 170,450 Q160,460 150,450" fill="#d4a0b5" opacity="0.2"/>
+                <path d="M80,420 L85,430 L95,430 L87,438 L90,448 L80,440 L70,448 L73,438 L65,430 L75,430 Z" fill="#d4a0b5" opacity="0.15" transform="scale(0.6) translate(60,420)"/>
+            </svg>
+        </div>
+
+        <!-- 日期卡片 -->
+        <div class="date-card" id="dateCard">
+            <div class="year" id="yearText">2026 年</div>
+            <div class="day" id="dayText">5 月 15 日</div>
+        </div>
+
+        <!-- 拍立得 -->
+        <div class="polaroid" id="polaroid">
+            <div class="photo">
+                <img src="https://picsum.photos/seed/1/300/300" alt="纪念日">
+                <div class="text-overlay">
+                    <div class="love">恋爱已经</div>
+                    <div class="days" id="daysCount">461</div>
+                    <div class="start">起始日：2025-2-8 星期六</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 黑胶唱片 -->
+        <div class="record" id="record"></div>
+
+        <!-- 状态框 -->
+        <div class="status-box" id="statusBox">
+            <div class="row">
+                <span class="emoji" id="statusEmoji">😍</span>
+                <span class="status" id="statusText">兴奋</span>
+            </div>
+            <div class="message" id="statusMessage">你是最喜欢的人</div>
+        </div>
+
+        <!-- 小状态框 -->
+        <div class="small-box" id="smallBox">
+            <span class="icon" id="smallIcon">📍</span>
+            <span class="text" id="smallText">清风徐徐</span>
+        </div>
+
+        <!-- 按钮 -->
+        <button class="btn" id="enterBtn">欢迎相遇</button>
+    </div>
+
+    <script>
+        // ===== 配置 =====
+        const CONFIG = {
+            themeColor: '#d4a0b5',
+            anniversary: {
+                startDate: '2025-02-08',
+                startText: '2025-2-8 星期六',
+                photo: 'https://picsum.photos/seed/1/300/300',
+                title: '恋爱已经'
+            },
+            statuses: ['兴奋', '安心', '想你', '忙碌', '开心'],
+            emojis: ['😍', '😊', '🥰', '😘', '💕'],
+            messages: ['你是最喜欢的人', '今天也想见你', '有你在真好', '要好好吃饭', '晚安'],
+            smallTexts: ['清风徐徐', '阳光正好', '微风不燥', '星光点点', '月色温柔']
+        };
+
+        // ===== 更新主题色 =====
+        function setTheme(color) {
+            CONFIG.themeColor = color;
+            const light = color + '22';
+            const text = color;
+
+            // 日期卡片
+            document.querySelector('.date-card').style.borderColor = color;
+            document.querySelector('.date-card').style.color = text;
+            document.querySelector('.date-card').style.background = light;
+            document.querySelector('.date-card::before').style.color = text;
+            document.querySelector('.date-card::after').style.color = text;
+
+            // 拍立得
+            document.querySelector('.polaroid').style.borderColor = light;
+            document.querySelector('.polaroid').style.background = light;
+            document.querySelector('.polaroid').style.boxShadow = `0 4px 16px ${color}20`;
+
+            // 黑胶唱片
+            document.querySelector('.record').style.background = `radial-gradient(circle at 30% 30%, #555, #111)`;
+
+            // 状态框
+            document.querySelector('.status-box').style.borderColor = color + '30';
+            document.querySelector('.status-box .row').style.color = text;
+            document.querySelector('.status-box .message').style.color = text;
+
+            // 小状态框
+            document.querySelector('.small-box').style.borderColor = color + '30';
+            document.querySelector('.small-box').style.color = text;
+
+            // 按钮
+            document.querySelector('.btn').style.background = color;
+            document.querySelector('.btn').style.boxShadow = `0 4px 16px ${color}40`;
+
+            // 背景装饰
+            document.querySelectorAll('.bg-deco svg path, .bg-deco svg circle').forEach(el => {
+                el.setAttribute('fill', color);
+            });
+        }
+
+        // ===== 更新日期 =====
+        function updateDate() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = now.getMonth() + 1;
+            const d = now.getDate();
+            document.getElementById('yearText').textContent = y + ' 年';
+            document.getElementById('dayText').textContent = m + ' 月 ' + d + ' 日';
+        }
+
+        // ===== 更新纪念日天数 =====
+        function updateDays() {
+            const start = new Date(CONFIG.anniversary.startDate);
+            const now = new Date();
+            const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+            document.getElementById('daysCount').textContent = diff;
+            document.querySelector('.polaroid .start').textContent = '起始日：' + CONFIG.anniversary.startText;
+            document.querySelector('.polaroid .love').textContent = CONFIG.anniversary.title;
+            document.querySelector('.polaroid img').src = CONFIG.anniversary.photo;
+        }
+
+        // ===== 随机抽取 =====
+        function randomPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+        function updateStatus() {
+            document.getElementById('statusEmoji').textContent = randomPick(CONFIG.emojis);
+            document.getElementById('statusText').textContent = randomPick(CONFIG.statuses);
+            document.getElementById('statusMessage').textContent = randomPick(CONFIG.messages);
+            document.getElementById('smallIcon').textContent = '📍';
+            document.getElementById('smallText').textContent = randomPick(CONFIG.smallTexts);
+        }
+
+        // ===== 按钮点击 =====
+        document.getElementById('enterBtn').addEventListener('click', function() {
+            alert('进入聊天界面');
+            // window.location.href = 'chat.html';
+        });
+
+        // ===== 初始化 =====
+        function init() {
+            updateDate();
+            updateDays();
+            updateStatus();
+            setTheme(CONFIG.themeColor);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
