@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LUCKY DAY</title>
+    <style>
+        /* ===== 全局重置 ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #faf5f7;
+            padding: 10px;
+        }
+
+        /* ===== 今日页面容器 ===== */
+        .today-page {
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 3 / 4.5;
+            background: #ffffff;
+            border-radius: 28px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.03);
+            transition: background 0.8s ease;
+        }
+
+        /* ===== 左上角：翅膀日期框 ===== */
+        .date-card {
+            position: absolute;
+            top: 24px;
+            left: 20px;
+            z-index: 2;
+            width: 92px;
+            height: 72px;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(4px);
+            border: 1.5px solid var(--theme-color, #d4a0b5);
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--theme-color, #d4a0b5);
+            box-shadow: 0 2px 12px rgba(212,160,181,0.06);
+            transition: all 0.8s ease;
+        }
+        .date-card .year { font-size: 11px; font-weight: 300; letter-spacing: 1px; }
+        .date-card .day { font-size: 14px; font-weight: 500; margin-top: 2px; }
+
+        /* 翅膀（用伪元素） */
+        .date-card::before,
+        .date-card::after {
+            content: '✦';
+            position: absolute;
+            top: -8px;
+            font-size: 18px;
+            color: var(--theme-color, #d4a0b5);
+            transition: color 0.8s ease;
+        }
+        .date-card::before { left: -6px; transform: rotate(-20deg); }
+        .date-card::after { right: -6px; transform: rotate(20deg); }
+
+        /* 花边（用伪元素） */
+        .date-card .lace {
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+        .date-card .lace span {
+            display: block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--theme-color, #d4a0b5);
+            opacity: 0.3;
+            transition: background 0.8s ease;
+        }
+
+        /* ===== 分隔线 ===== */
+        .divider {
+            position: absolute;
+            top: 86px;
+            left: 0;
+            width: 100%;
+            z-index: 1;
+            text-align: center;
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: var(--theme-color, #d4a0b5);
+            transition: color 0.8s ease;
+            opacity: 0.7;
+            font-weight: 300;
+        }
+        .divider span { margin: 0 6px; }
+
+        /* ===== 拍立得（波点边框） ===== */
+        .polaroid {
+            position: absolute;
+            top: 80px;
+            left: 4px;
+            z-index: 3;
+            width: 160px;
+            transform: rotate(5deg);
+            background: var(--theme-light, #fcf5f8);
+            border: 6px solid var(--theme-light, #fcf5f8);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(212,160,181,0.10);
+            transition: all 0.8s ease;
+        }
+
+        /* 波点图案 */
+        .polaroid::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            width: calc(100% + 12px);
+            height: calc(100% + 12px);
+            border-radius: 10px;
+            background-image: radial-gradient(circle, #ffffff 1.5px, transparent 1.5px);
+            background-size: 10px 10px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .polaroid .photo {
+            width: 100%;
+            aspect-ratio: 1/1;
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+            background: #e8e0e4;
+        }
+        .polaroid .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .polaroid .text-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            font-weight: bold;
+            width: 90%;
+        }
+        .polaroid .text-overlay .love { font-size: 10px; letter-spacing: 1px; }
+        .polaroid .text-overlay .days { font-size: 38px; line-height: 1; margin: 2px 0; }
+        .polaroid .text-overlay .start { font-size: 8px; opacity: 0.9; }
+
+        /* ===== 黑胶唱片 ===== */
+        .record {
+            position: absolute;
+            top: 148px;
+            left: -18px;
+            z-index: 2;
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #3a3a3a, #111111 80%, #000000);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            transition: background 0.8s ease;
+        }
+        .record::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #cccccc, #888888);
+            border: 2px solid #333333;
+        }
+
+        /* ===== 右上：状态框 ===== */
+        .status-box {
+            position: absolute;
+            top: 30px;
+            right: 14px;
+            z-index: 2;
+            width: 130px;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 16px;
+            padding: 12px 14px;
+            border: 1px solid var(--theme-color, #d4a0b5);
+            border-color: rgba(212,160,181,0.2);
+            transition: all 0.8s ease;
+            box-shadow: 0 2px 12px rgba(212,160,181,0.04);
+        }
+        .status-box .row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--theme-color, #d4a0b5);
+            transition: color 0.8s ease;
+        }
+        .status-box .row .emoji { font-size: 22px; }
+        .status-box .row .status { font-size: 14px; font-weight: 500; }
+        .status-box .message {
+            margin-top: 4px;
+            font-size: 11px;
+            color: var(--theme-color, #d4a0b5);
+            transition: color 0.8s ease;
+            opacity: 0.8;
+            line-height: 1.3;
+        }
+
+        /* ===== 右下：小状态框 ===== */
+        .small-box {
+            position: absolute;
+            bottom: 88px;
+            right: 14px;
+            z-index: 2;
+            width: 105px;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 14px;
+            padding: 10px 12px;
+            border: 1px solid rgba(212,160,181,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--theme-color, #d4a0b5);
+            transition: all 0.8s ease;
+            box-shadow: 0 2px 12px rgba(212,160,181,0.04);
+        }
+        .small-box .icon {
+            width: 18px;
+            height: 18px;
+            fill: var(--theme-color, #d4a0b5);
+            transition: fill 0.8s ease;
+        }
+        .small-box .text { font-size: 12px; font-weight: 300; }
+
+        /* ===== 底部按钮 ===== */
+        .btn {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            width: 80%;
+            padding: 12px;
+            border-radius: 50px;
+            border: none;
+            background: var(--theme-color, #d4a0b5);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(212,160,181,0.2);
+        }
+        .btn:active { transform: translateX(-50%) scale(0.96); opacity: 0.8; }
+
+        /* ===== 底部装饰（星星月亮爱心） ===== */
+        .deco-area {
+            position: absolute;
+            bottom: 60px;
+            left: 0;
+            width: 100%;
+            height: 160px;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .deco-area svg {
+            position: absolute;
+            fill: var(--theme-color, #d4a0b5);
+            opacity: 0.15;
+            transition: fill 0.8s ease;
+        }
+
+        /* ===== 响应式微调 ===== */
+        @media (max-width: 420px) {
+            .date-card { width: 80px; height: 64px; top: 20px; left: 16px; }
+            .date-card .year { font-size: 10px; }
+            .date-card .day { font-size: 12px; }
+            .polaroid { width: 140px; top: 75px; left: 2px; }
+            .polaroid .text-overlay .days { font-size: 32px; }
+            .record { width: 66px; height: 66px; top: 140px; left: -16px; }
+            .status-box { width: 115px; right: 10px; top: 26px; padding: 10px 12px; }
+            .status-box .row .emoji { font-size: 18px; }
+            .status-box .row .status { font-size: 12px; }
+            .small-box { width: 92px; bottom: 80px; right: 10px; padding: 8px 10px; }
+            .small-box .text { font-size: 10px; }
+            .btn { width: 85%; padding: 10px; font-size: 13px; bottom: 20px; }
+            .divider { font-size: 10px; top: 78px; }
+        }
+        @media (max-width: 360px) {
+            .date-card { width: 70px; height: 56px; top: 16px; left: 12px; }
+            .polaroid { width: 120px; top: 70px; left: 0; }
+            .polaroid .text-overlay .days { font-size: 26px; }
+            .record { width: 56px; height: 56px; top: 130px; left: -14px; }
+            .status-box { width: 100px; right: 8px; top: 22px; }
+            .small-box { width: 80px; bottom: 72px; right: 8px; }
+            .btn { font-size: 12px; padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="today-page" id="todayPage">
+        <!-- ===== 左上：日期框 ===== -->
+        <div class="date-card" id="dateCard">
+            <div class="year" id="yearText">2026 年</div>
+            <div class="day" id="dayText">5 月 15 日</div>
+            <div class="lace"><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+
+        <!-- ===== 分隔线 ===== -->
+        <div class="divider" id="dividerLine">─── <span>𖤐</span> 夏 以 昼 今 日 状 态 ───</div>
+
+        <!-- ===== 拍立得 ===== -->
+        <div class="polaroid" id="polaroid">
+            <div class="photo">
+                <img src="https://picsum.photos/seed/1/300/300" alt="纪念日">
+                <div class="text-overlay">
+                    <div class="love">恋爱已经</div>
+                    <div class="days" id="daysCount">461</div>
+                    <div class="start">起始日：2025-2-8 星期六</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 黑胶唱片 ===== -->
+        <div class="record" id="record"></div>
+
+        <!-- ===== 右上：状态框 ===== -->
+        <div class="status-box" id="statusBox">
+            <div class="row">
+                <span class="emoji" id="statusEmoji">😍</span>
+                <span class="status" id="statusText">兴奋</span>
+            </div>
+            <div class="message" id="statusMessage">你是最喜欢的人</div>
+        </div>
+
+        <!-- ===== 右下：小状态框 ===== -->
+        <div class="small-box" id="smallBox">
+            <!-- 定位图标 SVG -->
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                <circle cx="12" cy="9" r="2" fill="white"/>
+            </svg>
+            <span class="text" id="smallText">清风徐徐</span>
+        </div>
+
+        <!-- ===== 底部按钮 ===== -->
+        <button class="btn" id="enterBtn">欢迎相遇</button>
+
+        <!-- ===== 底部装饰 ===== -->
+        <div class="deco-area" id="decoArea">
+            <!-- 星星 -->
+            <svg width="24" height="24" viewBox="0 0 24 24" style="bottom:20px; left:10%;">
+                <polygon points="12,2 15,9 22,9 16,14 18,22 12,17 6,22 8,14 2,9 9,9"/>
+            </svg>
+            <!-- 月亮 -->
+            <svg width="30" height="30" viewBox="0 0 24 24" style="bottom:30px; left:25%;">
+                <path d="M12 2A10 10 0 0 0 12 22A10 10 0 0 0 12 2M12 4A8 8 0 0 1 20 12A8 8 0 0 1 12 20V4Z" />
+            </svg>
+            <!-- 爱心 -->
+            <svg width="20" height="20" viewBox="0 0 24 24" style="bottom:15px; left:45%;">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <!-- 更多散落星星 -->
+            <svg width="12" height="12" viewBox="0 0 24 24" style="bottom:40px; left:65%;">
+                <polygon points="12,2 15,9 22,9 16,14 18,22 12,17 6,22 8,14 2,9 9,9"/>
+            </svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" style="bottom:10px; left:80%;">
+                <polygon points="12,2 15,9 22,9 16,14 18,22 12,17 6,22 8,14 2,9 9,9"/>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        // ===== 配置 =====
+        const CONFIG = {
+            themeColor: '#d4a0b5',
+            anniversary: {
+                startDate: '2025-02-08',
+                startText: '2025-2-8 星期六',
+                photo: 'https://picsum.photos/seed/1/300/300',
+                title: '恋爱已经'
+            },
+            statuses: ['兴奋', '安心', '想你', '忙碌', '开心'],
+            emojis: ['😍', '😊', '🥰', '😘', '💕'],
+            messages: ['你是最喜欢的人', '今天也想见你', '有你在真好', '要好好吃饭', '晚安'],
+            smallTexts: ['清风徐徐', '阳光正好', '微风不燥', '星光点点', '月色温柔']
+        };
+
+        // ===== 更新主题色 =====
+        function setTheme(color) {
+            CONFIG.themeColor = color;
+            const light = color + '22';
+            const lightBg = color + '0a';
+
+            // 设置 CSS 变量
+            document.documentElement.style.setProperty('--theme-color', color);
+            document.documentElement.style.setProperty('--theme-light', light);
+
+            // 日期框
+            document.querySelector('.date-card').style.borderColor = color;
+            document.querySelector('.date-card').style.color = color;
+            document.querySelector('.date-card').style.boxShadow = `0 2px 12px ${color}10`;
+            document.querySelector('.date-card::before').style.color = color;
+            document.querySelector('.date-card::after').style.color = color;
+            document.querySelectorAll('.date-card .lace span').forEach(el => {
+                el.style.background = color;
+            });
+
+            // 分隔线
+            document.getElementById('dividerLine').style.color = color;
+
+            // 拍立得
+            document.querySelector('.polaroid').style.background = light;
+            document.querySelector('.polaroid').style.borderColor = light;
+            document.querySelector('.polaroid').style.boxShadow = `0 4px 20px ${color}15`;
+
+            // 状态框
+            document.querySelector('.status-box').style.borderColor = color + '30';
+            document.querySelector('.status-box .row').style.color = color;
+            document.querySelector('.status-box .message').style.color = color;
+
+            // 小状态框
+            document.querySelector('.small-box').style.borderColor = color + '30';
+            document.querySelector('.small-box').style.color = color;
+            document.querySelector('.small-box .icon').style.fill = color;
+
+            // 按钮
+            document.querySelector('.btn').style.background = color;
+            document.querySelector('.btn').style.boxShadow = `0 4px 16px ${color}40`;
+
+            // 底部装饰
+            document.querySelectorAll('.deco-area svg').forEach(el => {
+                el.style.fill = color;
+            });
+        }
+
+        // ===== 更新日期 =====
+        function updateDate() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = now.getMonth() + 1;
+            const d = now.getDate();
+            document.getElementById('yearText').textContent = y + ' 年';
+            document.getElementById('dayText').textContent = m + ' 月 ' + d + ' 日';
+        }
+
+        // ===== 更新纪念日 =====
+        function updateDays() {
+            const start = new Date(CONFIG.anniversary.startDate);
+            const now = new Date();
+            const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+            document.getElementById('daysCount').textContent = diff;
+            document.querySelector('.polaroid .start').textContent = '起始日：' + CONFIG.anniversary.startText;
+            document.querySelector('.polaroid .love').textContent = CONFIG.anniversary.title;
+            document.querySelector('.polaroid img').src = CONFIG.anniversary.photo;
+        }
+
+        // ===== 随机更新状态 =====
+        function randomPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+        function updateStatus() {
+            document.getElementById('statusEmoji').textContent = randomPick(CONFIG.emojis);
+            document.getElementById('statusText').textContent = randomPick(CONFIG.statuses);
+            document.getElementById('statusMessage').textContent = randomPick(CONFIG.messages);
+            document.getElementById('smallText').textContent = randomPick(CONFIG.smallTexts);
+        }
+
+        // ===== 按钮事件 =====
+        document.getElementById('enterBtn').addEventListener('click', function() {
+            alert('即将进入聊天界面…');
+            // window.location.href = 'chat.html';
+        });
+
+        // ===== 初始化 =====
+        function init() {
+            updateDate();
+            updateDays();
+            updateStatus();
+            setTheme(CONFIG.themeColor);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
